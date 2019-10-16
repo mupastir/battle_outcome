@@ -1,8 +1,8 @@
 import random
-from functools import reduce
-from _operator import mul
-from abc import ABC, abstractmethod
 import typing
+from abc import ABC, abstractmethod
+
+from utils import geometric_avg
 
 
 class BaseUnit(ABC):
@@ -97,15 +97,10 @@ class Vehicle(BaseUnit):
     def _operators_health(self):
         return [x.health for x in self.operators]
 
-    @staticmethod
-    def _geometric_avg(*attack_success):
-        prod = reduce(mul, *attack_success, 0)
-        return prod ** (1.0 / len(attack_success))
-
     @property
     def attack_success(self):
         if self.is_alive():
-            return 0.5 * (1 + self.health / 100) * self._geometric_avg(
+            return 0.5 * (1 + self.health / 100) * geometric_avg(
                 [x.attack_success for x in self.operators])
         return 0
 

@@ -11,6 +11,7 @@ numpy = "*"
 ipdb = "*"
 pytest-coverage = "*"
 pytest-cov = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.7"
