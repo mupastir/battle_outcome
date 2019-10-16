@@ -4,6 +4,9 @@ from units import Soldier, Vehicle
 RECHARGE_MIN = 100
 OPERATORS_NUMBER = 3
 RECHARGE_VEHICLE = 1000
+MAX_DAMAGE = 600
+DAMAGE_MIN = 50
+DAMAGE_AVG = 167
 
 
 class TestUnits:
@@ -44,17 +47,21 @@ class TestUnits:
 
     def test_soldier_get_damage(self, soldier):
         health_before = soldier.health
-        soldier.damaged(50)
+        soldier.damaged(DAMAGE_MIN)
         assert health_before != soldier.health
 
     def test_soldier_is_alive(self, soldier):
         is_alive_before_damage = soldier.is_alive()
-        soldier.damaged(100)
+        soldier.damaged(MAX_DAMAGE)
         assert not soldier.is_alive()
         assert is_alive_before_damage
 
     def test_vehicle_attack_success(self, vehicle):
         assert isinstance(vehicle.attack_success, float)
+
+    def test_vehicle_attack_not_success(self, vehicle):
+        vehicle.damaged(600)
+        assert vehicle.attack_success == 0
 
     def test_vehicle_up_experience(self, vehicle):
         experience_before = [operator.experience
@@ -84,6 +91,16 @@ class TestUnits:
 
     def test_vehicle_is_alive(self, vehicle):
         is_alive_before_damage = vehicle.is_alive()
-        vehicle.damaged(167)
+        vehicle.damaged(DAMAGE_AVG)
         assert not vehicle.is_alive()
         assert is_alive_before_damage
+
+    def test_vehicle_recharge_less(self):
+        operators = [Soldier(RECHARGE_MIN) for x in range(OPERATORS_NUMBER)]
+        with pytest.raises(ValueError):
+            Vehicle(RECHARGE_MIN, operators)
+
+    def test_vehicle_operators_less(self):
+        operators = [Soldier(RECHARGE_MIN) for x in range(OPERATORS_NUMBER-1)]
+        with pytest.raises(ValueError):
+            Vehicle(RECHARGE_VEHICLE, operators)
