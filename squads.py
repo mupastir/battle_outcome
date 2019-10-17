@@ -56,6 +56,8 @@ class Squad(BaseSquad):
         damage_inflicted = sum([unit.damage for unit
                                 in self.units])
         enemy_squad.damaged(damage_inflicted)
+        for unit in self.units:
+            unit.up_experience()
 
     def damaged(self, damage_received):
         damage_per_unit = damage_received / len(self.units)
