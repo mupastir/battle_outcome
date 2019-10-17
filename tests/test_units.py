@@ -5,6 +5,7 @@ RECHARGE_MIN = 100
 OPERATORS_NUMBER = 3
 RECHARGE_VEHICLE = 1000
 MAX_DAMAGE = 600
+MAX_EXPERIENCE = 50
 DAMAGE_MIN = 50
 DAMAGE_AVG = 167
 
@@ -22,19 +23,24 @@ class TestUnits:
 
     def test_creating_soldier_with_string_recharge(self):
         with pytest.raises(TypeError):
-            solder = Soldier('')
+            Soldier('')
 
     def test_creating_vehicle_with_string_recharge(self):
         operators = [Soldier(RECHARGE_MIN) for x in
                      range(OPERATORS_NUMBER)]
         with pytest.raises(TypeError):
-            vehicle = Vehicle((0,), operators)
+            Vehicle((0,), operators)
 
     def test_soldier_up_experience(self, soldier):
         experience_before = soldier.experience
         soldier.up_experience()
         assert (soldier.experience - experience_before) > 0
         assert isinstance(soldier.experience, int)
+
+    def test_soldier_not_up_experience(self, soldier):
+        soldier.experience = MAX_EXPERIENCE
+        soldier.up_experience()
+        assert soldier.experience == MAX_EXPERIENCE
 
     def test_soldier_attack_success(self, soldier):
         assert isinstance(soldier.attack_success, float)
