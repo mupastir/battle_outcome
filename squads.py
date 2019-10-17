@@ -1,14 +1,30 @@
-import typing
 from abc import ABC, abstractmethod
+from typing import Iterable, List
 
 from units import BaseUnit
-from utils import geometric_avg
+from utils import UnitsNumber, geometric_avg
 
 
 class BaseSquad(ABC):
+    MIN_UNITS_NUMBER = 5
+    MAX_UNITS_NUMBER = 10
 
-    def __init__(self):
+    def __init__(self, units: Iterable[BaseUnit]):
         super().__init__()
+        self.units = list(units)
+
+    @property
+    def units(self) -> List[BaseUnit]:
+        return self._units
+
+    @units.setter
+    def units(self, value: List[BaseUnit]):
+        self.validate_units(value)
+        self._units = value
+
+    def validate_units(self, units):
+        if not self.MIN_UNITS_NUMBER <= len(units) <= self.MAX_UNITS_NUMBER:
+            raise UnitsNumber
 
     @abstractmethod
     def attack_probability(self):
@@ -29,9 +45,8 @@ class BaseSquad(ABC):
 
 class Squad(BaseSquad):
 
-    def __init__(self, units: typing.Iterable[BaseUnit]):
-        super().__init__()
-        self.units = list(units)
+    def __init__(self, units: Iterable[BaseUnit]):
+        super().__init__(units)
 
     @property
     def attack_probability(self):
