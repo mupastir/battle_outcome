@@ -2,11 +2,7 @@ import random
 import typing
 from abc import ABC, abstractmethod
 
-from utils import geometric_avg
-
-
-class MaxExperienceException(Exception):
-    pass
+from utils import MaxExperienceException, geometric_avg
 
 
 class BaseUnit(ABC):
