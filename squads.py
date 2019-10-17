@@ -1,7 +1,7 @@
 import typing
 from abc import ABC, abstractmethod
 
-from units import Soldier, Vehicle
+from units import BaseUnit
 from utils import geometric_avg
 
 
@@ -29,20 +29,18 @@ class BaseSquad(ABC):
 
 class Squad(BaseSquad):
 
-    def __init__(self, *units: typing.Iterable[Soldier, Vehicle]):
+    def __init__(self, units: typing.Iterable[BaseUnit]):
         super().__init__()
-        self.units = list(*units)
+        self.units = list(units)
 
     @property
     def attack_probability(self):
         return geometric_avg([unit.attack_success for unit in self.units])
 
     def damage(self, enemy_squad: BaseSquad):
-        if self.is_active:
-            damage_inflicted = sum([unit.attack_success for unit
-                                    in self.units])
-            enemy_squad.damaged(damage_inflicted)
-        return 0
+        damage_inflicted = sum([unit.damage for unit
+                                in self.units])
+        enemy_squad.damaged(damage_inflicted)
 
     def damaged(self, damage_received):
         damage_per_unit = damage_received / len(self.units)
@@ -51,4 +49,4 @@ class Squad(BaseSquad):
 
     @property
     def is_active(self):
-        return any(unit.is_active() for unit in self.units)
+        return any(unit.is_alive() for unit in self.units)
