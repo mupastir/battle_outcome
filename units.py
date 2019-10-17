@@ -5,13 +5,31 @@ from abc import ABC, abstractmethod
 from utils import geometric_avg
 
 
-class BaseUnit(ABC):
+class MaxExperienceException(Exception):
+    pass
 
-    def __init__(self, recharge: int):
+
+class BaseUnit(ABC):
+    MAX_EXPERIENCE = 50
+
+    def __init__(self, recharge: int, health=100, experience=0):
         super().__init__()
         self.recharge = self.get_recharge(recharge)
-        self.health = 100
-        self.experience = 0
+        self.health = health
+        self.experience = experience
+
+    @property
+    def experience(self):
+        return self._experience
+
+    @experience.setter
+    def experience(self, value):
+        self.validate_experience(value)
+        self._experience = value
+
+    def validate_experience(self, experience):
+        if experience > self.MAX_EXPERIENCE:
+            raise MaxExperienceException
 
     def get_recharge(self, recharge):
         if not isinstance(recharge, int):
@@ -35,9 +53,7 @@ class BaseUnit(ABC):
         pass
 
     def is_alive(self) -> bool:
-        if self.health <= 0:
-            return False
-        return True
+        return not self.health <= 0
 
 
 class Soldier(BaseUnit):
@@ -46,7 +62,10 @@ class Soldier(BaseUnit):
         super().__init__(recharge)
 
     def up_experience(self):
-        self.experience += 1
+        try:
+            self.experience += 1
+        except MaxExperienceException:
+            pass
 
     @property
     def attack_success(self):
@@ -66,9 +85,9 @@ class Vehicle(BaseUnit):
     MIN_RECHARGE = 1000
     MAX_RECHARGE = 2000
 
-    def __init__(self, recharge: int, *operators: typing.Iterable[Soldier]):
+    def __init__(self, recharge: int, operators: typing.Iterable[Soldier]):
         super().__init__(recharge)
-        self.operators = list(*operators)
+        self.operators = operators
         self.total_health = self.health + (sum(self._operators_health)
                                            / len(self._operators_health))
 
