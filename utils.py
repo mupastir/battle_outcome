@@ -3,6 +3,13 @@ from functools import reduce
 from _operator import mul
 
 
-def geometric_avg(*args):
-    prod = reduce(mul, *args, 0)
-    return prod ** (1.0 / len(args))
+class MaxExperienceException(Exception):
+    pass
+
+
+class UnitsNumber(Exception):
+    pass
+
+
+def geometric_mean(args):
+    return reduce(mul, args) ** (1.0 / len(args))
