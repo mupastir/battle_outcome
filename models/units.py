@@ -65,8 +65,10 @@ class Soldier(BaseUnit):
 
     @property
     def attack_success(self):
-        return 0.5 * (1 + self.health / 100) * random.randint(
-            50 + self.experience, 100) / 100
+        if self.is_alive():
+            return 0.5 * (1 + self.health / 100) * random.randint(
+                50 + self.experience, 100) / 100
+        return 0
 
     @property
     def damage(self):
