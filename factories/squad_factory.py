@@ -13,4 +13,4 @@ class SquadFactory:
         units_factories = random.choices([SoldierFactory, VehiclesFactory],
                                          k=self.units_number)
         return Squad(
-            [unit_factory.create() for unit_factory in units_factories])
+            [unit_factory().create() for unit_factory in units_factories])

@@ -12,7 +12,7 @@ class UnitCreator(ABC):
 
 class SoldierFactory(UnitCreator):
 
-    def __init__(self, recharge):
+    def __init__(self, recharge=100):
         self.recharge = recharge
 
     def create(self) -> Soldier:
@@ -23,7 +23,7 @@ class VehiclesFactory(UnitCreator):
     OPERATORS_NUMBER = 3
     OPERATORS_RECHARGE = 100
 
-    def __init__(self, recharge):
+    def __init__(self, recharge=1000):
         self.recharge = recharge
 
     def create(self) -> Vehicle:
