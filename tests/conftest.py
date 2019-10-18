@@ -1,6 +1,6 @@
 import pytest
-from squads import Squad
-from units import Soldier, Vehicle
+from models.squads import Squad
+from models.units import Soldier, Vehicle
 
 RECHARGE_MIN = 100
 RECHARGE_VEHICLE = 1000
@@ -26,9 +26,18 @@ def vehicle():
 
 @pytest.fixture
 def squad():
+    return _create_squad()
+
+
+@pytest.fixture
+def squad_enemy():
+    return _create_squad()
+
+
+def _create_squad():
     units = [_create_vehicle() for x in range(UNITS_NUMBER)]
-    test_squad = Squad(units)
-    return test_squad
+    pure_squad = Squad(units)
+    return pure_squad
 
 
 def _create_vehicle():
