@@ -2,17 +2,27 @@ import random
 import typing
 from abc import ABC, abstractmethod
 
-from utils import MaxExperienceException, geometric_mean
+from utils import MaxExperienceException, MinHealthException, geometric_mean
 
 
 class BaseUnit(ABC):
     MAX_EXPERIENCE = 50
+    MIN_HEALTH = 0
 
     def __init__(self, recharge: int, health=100, experience=0):
         super().__init__()
         self.recharge = self.get_recharge(recharge)
         self.health = health
         self.experience = experience
+
+    @property
+    def health(self):
+        return self._health
+
+    @health.setter
+    def health(self, value):
+        self.validate_health(value)
+        self._health = value
 
     @property
     def experience(self):
@@ -22,6 +32,10 @@ class BaseUnit(ABC):
     def experience(self, value):
         self.validate_experience(value)
         self._experience = value
+
+    def validate_health(self, health):
+        if health < self.MIN_HEALTH:
+            raise MinHealthException
 
     def validate_experience(self, experience):
         if experience > self.MAX_EXPERIENCE:
@@ -75,7 +89,10 @@ class Soldier(BaseUnit):
         return 0.05 + self.experience / 100
 
     def damaged(self, damage):
-        self.health -= damage
+        try:
+            self.health -= damage
+        except MinHealthException:
+            return 0
 
 
 class Vehicle(BaseUnit):
@@ -130,9 +147,9 @@ class Vehicle(BaseUnit):
         operators = [operator for operator in self.operators
                      if operator.is_alive()]
         operators.pop(
-            random.randint(0, len(operators)-1)).health -= damage * 20 / 100
+            random.randint(0, len(operators)-1)).demaged(damage * 20 / 100)
         for x in operators:
-            x.health -= damage * 10 / 100
+            x.demaged(damage * 10 / 100)
 
     def is_alive(self) -> bool:
         return any(operator.is_alive() for operator in self.operators) \
