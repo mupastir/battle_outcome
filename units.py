@@ -2,7 +2,7 @@ import random
 import typing
 from abc import ABC, abstractmethod
 
-from utils import MaxExperienceException, geometric_avg
+from utils import MaxExperienceException, geometric_mean
 
 
 class BaseUnit(ABC):
@@ -115,7 +115,7 @@ class Vehicle(BaseUnit):
     @property
     def attack_success(self):
         if self.is_alive():
-            return 0.5 * (1 + self.health / 100) * geometric_avg(
+            return 0.5 * (1 + self.health / 100) * geometric_mean(
                 [x.attack_success for x in self.operators])
         return 0
 

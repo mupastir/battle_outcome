@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, List
 
 from units import BaseUnit
-from utils import UnitsNumber, geometric_avg
+from utils import UnitsNumber, geometric_mean
 
 
 class BaseSquad(ABC):
@@ -50,7 +50,7 @@ class Squad(BaseSquad):
 
     @property
     def attack_probability(self):
-        return geometric_avg([unit.attack_success for unit in self.units])
+        return geometric_mean([unit.attack_success for unit in self.units])
 
     def damage(self, enemy_squad: BaseSquad):
         damage_inflicted = sum([unit.damage for unit
