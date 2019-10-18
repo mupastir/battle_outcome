@@ -3,11 +3,15 @@ from functools import reduce
 from _operator import mul
 
 
-class MaxExperienceException(Exception):
+class MaxExperienceException(ValueError):
     pass
 
 
-class UnitsNumber(Exception):
+class MinHealthException(ValueError):
+    pass
+
+
+class UnitsNumber(ValueError):
     pass
 
 
