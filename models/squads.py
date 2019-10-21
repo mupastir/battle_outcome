@@ -52,11 +52,8 @@ class Squad(BaseSquad):
     def __init__(self, units: Iterable[BaseUnit]):
         super().__init__(units)
 
-    @property
-    def attack_probability(self):
-        if self.is_active:
-            return geometric_mean([unit.attack_success for unit in self.units])
-        return 0
+    def __lt__(self, other):
+        return self.health < other.health
 
     @property
     def damage(self):
@@ -64,6 +61,16 @@ class Squad(BaseSquad):
             unit.up_experience()
         return sum([unit.damage for unit
                     in self.units])
+
+    @property
+    def attack_probability(self):
+        if self.is_active:
+            return geometric_mean([unit.attack_success for unit in self.units])
+        return 0
+
+    @property
+    def health(self) -> int:
+        return sum(unit.health for unit in self.units)
 
     def damaged(self, damage_received):
         damage_per_unit = damage_received / len(self.units)
@@ -73,10 +80,3 @@ class Squad(BaseSquad):
     @property
     def is_active(self) -> bool:
         return any(unit.is_alive() for unit in self.units)
-
-    @property
-    def health(self) -> int:
-        return sum(unit.health for unit in self.units)
-
-    def __lt__(self, other):
-        return self.health < other.health
