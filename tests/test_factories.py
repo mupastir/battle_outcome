@@ -3,7 +3,7 @@ from factories.squad_factory import SquadFactory
 from factories.unit_factories import SoldierFactory, VehiclesFactory
 from models.squads import Squad
 from models.units import Soldier, Vehicle
-from utils import UnitsNumber
+from utils import UnitsNumberException
 
 RECHARGE_NORMAL = 100
 RECHARGE_VEHICLE = 1000
@@ -34,5 +34,5 @@ class TestFactories:
             VehiclesFactory('').create()
 
     def test_not_create_squad(self):
-        with pytest.raises(UnitsNumber):
+        with pytest.raises(UnitsNumberException):
             SquadFactory(MIN_UNITS_NUMBER).create()

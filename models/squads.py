@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, List
 
 from models.units import BaseUnit
-from utils import UnitsNumber, geometric_mean
+from utils import UnitsNumberException, geometric_mean
 
 
 class BaseSquad(ABC):
@@ -22,9 +22,9 @@ class BaseSquad(ABC):
         self.validate_units(value)
         self._units = value
 
-    def validate_units(self, units):
+    def validate_units(self, units: List[BaseUnit]):
         if not self.MIN_UNITS_NUMBER <= len(units) <= self.MAX_UNITS_NUMBER:
-            raise UnitsNumber
+            raise UnitsNumberException
 
     @abstractmethod
     def attack_probability(self):

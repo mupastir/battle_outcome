@@ -1,7 +1,7 @@
 import pytest
 from models.squads import Squad
 from models.units import Soldier
-from utils import UnitsNumber
+from utils import UnitsNumberException
 
 UNITS_NUMBER = 7
 RECHARGE_MIN = 100
@@ -19,7 +19,7 @@ class TestSquads:
 
     def test_error_creating_squad(self):
         units = [Soldier(RECHARGE_MIN) for x in range(UNITS_NOT_ENOUGH)]
-        with pytest.raises(UnitsNumber):
+        with pytest.raises(UnitsNumberException):
             Squad(units)
 
     def test_squad_attack_probability(self, squad: Squad):
