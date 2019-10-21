@@ -23,3 +23,7 @@ class Army:
     def validate_squads(self, squads: List[Squad]):
         if len(squads) < self.MIN_SQUADS_PER_ARMY:
             raise MinSquadsException
+
+    @property
+    def is_active(self):
+        return any([squad.is_active() for squad in self.squads])
