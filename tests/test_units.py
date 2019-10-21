@@ -102,7 +102,7 @@ class TestUnits:
 
     def test_vehicle_is_alive(self, vehicle: Vehicle):
         is_alive_before_damage = vehicle.is_alive()
-        vehicle.damaged(DAMAGE_AVG)
+        vehicle.damaged(MAX_DAMAGE)
         assert not vehicle.is_alive()
         assert is_alive_before_damage
 

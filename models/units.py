@@ -63,7 +63,7 @@ class BaseUnit(ABC):
         pass
 
     def is_alive(self) -> bool:
-        return not self.health <= 0
+        return self.health > 0
 
 
 class Soldier(BaseUnit):
@@ -92,7 +92,7 @@ class Soldier(BaseUnit):
         try:
             self.health -= damage
         except MinHealthException:
-            return 0
+            self.health = 0
 
 
 class Vehicle(BaseUnit):
@@ -143,13 +143,16 @@ class Vehicle(BaseUnit):
         return 0.1 + sum([x.experience / 100 for x in self.operators])
 
     def damaged(self, damage):
-        self.health -= damage * 60 / 100
+        try:
+            self.health -= damage * 60 / 100
+        except MinHealthException:
+            self.health = 0
         operators = [operator for operator in self.operators
                      if operator.is_alive()]
         operators.pop(
-            random.randint(0, len(operators)-1)).demaged(damage * 20 / 100)
+            random.randint(0, len(operators)-1)).damaged(damage * 20 / 100)
         for x in operators:
-            x.demaged(damage * 10 / 100)
+            x.damaged(damage * 10 / 100)
 
     def is_alive(self) -> bool:
         return any(operator.is_alive() for operator in self.operators) \
