@@ -11,7 +11,11 @@ class MinHealthException(ValueError):
     pass
 
 
-class UnitsNumber(ValueError):
+class MinSquadsException(ValueError):
+    pass
+
+
+class UnitsNumberException(ValueError):
     pass
 
 
