@@ -42,6 +42,10 @@ class BaseSquad(ABC):
     def is_active(self):
         pass
 
+    @abstractmethod
+    def health(self):
+        pass
+
 
 class Squad(BaseSquad):
 
@@ -67,5 +71,12 @@ class Squad(BaseSquad):
             unit.damaged(damage_per_unit)
 
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return any(unit.is_alive() for unit in self.units)
+
+    @property
+    def health(self) -> int:
+        return sum(unit.health for unit in self.units)
+
+    def __lt__(self, other):
+        return self.health < other.health

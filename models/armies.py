@@ -7,8 +7,9 @@ from utils import MinSquadsException
 class Army:
     MIN_SQUADS_PER_ARMY = 2
 
-    def __init__(self, squads: Iterable[Squad]):
+    def __init__(self, name: str, squads: Iterable[Squad]):
         super().__init__()
+        self.name = name
         self.squads = list(squads)
 
     @property
@@ -26,4 +27,4 @@ class Army:
 
     @property
     def is_active(self):
-        return any([squad.is_active() for squad in self.squads])
+        return any([squad.is_active for squad in self.squads])
