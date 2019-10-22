@@ -1,5 +1,6 @@
+import copy
 import random
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Dict, List
 
 from factories.army_factory import ArmyFactory
@@ -8,33 +9,24 @@ from models.squads import Squad
 
 
 class Strategy(ABC):
-    @abstractmethod
+    FUNCTION_SELECTOR = None
+
     def get_enemy_squad(self, defending: Army) -> Squad:
-        pass
+        return self.FUNCTION_SELECTOR(
+            [squad for squad in defending.squads if squad.is_active]
+        )
 
 
 class RandomStrategy(Strategy):
-    @classmethod
-    def get_enemy_squad(cls, defending: Army) -> Squad:
-        return random.choice(
-            [squad for squad in defending.squads if squad.is_active]
-        )
+    FUNCTION_SELECTOR = random.choice
 
 
 class WeakestStrategy(Strategy):
-    @classmethod
-    def get_enemy_squad(cls, defending: Army) -> Squad:
-        return min(
-            [squad for squad in defending.squads if squad.is_active]
-        )
+    FUNCTION_SELECTOR = min
 
 
 class StrongestStrategy(Strategy):
-    @classmethod
-    def get_enemy_squad(cls, defending: Army) -> Squad:
-        return max(
-            [squad for squad in defending.squads if squad.is_active]
-        )
+    FUNCTION_SELECTOR = max
 
 
 class Simulation:
@@ -47,16 +39,17 @@ class Simulation:
         random.shuffle(self.armies)
         self.attacking_army_ind = 0
 
-    def run(self, strategy: Strategy) -> float:
+    def run(self, strategy: Strategy) -> (str, float):
         attacking_army, enemy_armies = self._get_armies()
         total_damage = 0
         for enemy_army in enemy_armies:
             for squad_n in range(len(attacking_army.squads)):
-                enemy_squad = strategy.get_enemy_squad(enemy_army)
-                total_damage += self._attack(
-                    attacking_army.squads[squad_n], enemy_squad)
+                if enemy_army.is_active:
+                    enemy_squad = strategy.get_enemy_squad(enemy_army)
+                    total_damage += self._attack(
+                        attacking_army.squads[squad_n], enemy_squad)
         self._change_attacking_army()
-        return total_damage
+        return attacking_army.name, total_damage
 
     def _change_attacking_army(self):
         if self.attacking_army_ind+1 < len(self.armies):
@@ -65,7 +58,7 @@ class Simulation:
             self.attacking_army_ind = 0
 
     def _get_armies(self) -> (Army, List[Army]):
-        armies = self.armies
+        armies = copy.copy(self.armies)
         return armies.pop(self.attacking_army_ind), armies
 
     @staticmethod
@@ -80,9 +73,9 @@ class Simulation:
             return damage
         return 0.0
 
-    def get_winner_army(self) -> [Army, None]:
+    def get_winner_army(self) -> [str, None]:
         if self.is_only_one_army_alive:
-            return [army for army in self.armies if army.is_active][-1]
+            return [army.name for army in self.armies if army.is_active][-1]
         return None
 
     @property
