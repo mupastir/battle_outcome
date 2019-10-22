@@ -149,8 +149,8 @@ class Vehicle(BaseUnit):
             self.health = 0
         operators = [operator for operator in self.operators
                      if operator.is_alive()]
-        operators.pop(
-            random.randint(0, len(operators)-1)).damaged(damage * 20 / 100)
+        random.shuffle(operators)
+        operators.pop(-1).damaged(damage * 20 / 100)
         for x in operators:
             x.damaged(damage * 10 / 100)
 
