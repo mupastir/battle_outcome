@@ -4,6 +4,7 @@ from models.armies import Army
 from simulation import (RandomStrategy, Simulation, StrongestStrategy,
                         WeakestStrategy)
 
+MAX_DAMAGE = 6000
 ARMIES_SQUADS = {'test1': [5, 5], 'test2': [5, 5]}
 logger = logging.getLogger(__name__)
 
@@ -17,19 +18,22 @@ class TestSimulation:
         assert isinstance(simulation.armies[0], Army)
 
     def test_simulation_running_with_strongest_strategy(self, simulation):
-        attacking_damage = simulation.run(StrongestStrategy)
+        army_name, attacking_damage = simulation.run(StrongestStrategy())
         assert attacking_damage >= 0
         assert isinstance(attacking_damage, float)
+        assert isinstance(army_name, str)
 
     def test_simulation_running_with_weakest_strategy(self, simulation):
-        attacking_damage = simulation.run(WeakestStrategy)
+        army_name, attacking_damage = simulation.run(WeakestStrategy())
         assert attacking_damage >= 0
         assert isinstance(attacking_damage, float)
+        assert isinstance(army_name, str)
 
     def test_simulation_running_with_random_strategy(self, simulation):
-        attacking_damage = simulation.run(RandomStrategy)
+        army_name, attacking_damage = simulation.run(RandomStrategy())
         assert attacking_damage >= 0
         assert isinstance(attacking_damage, float)
+        assert isinstance(army_name, str)
 
     def test_all_armies_alive(self, simulation):
         assert not simulation.is_only_one_army_alive
@@ -37,8 +41,12 @@ class TestSimulation:
     def test_no_winner_army_yet(self, simulation):
         assert simulation.get_winner_army() is None
 
-    def test_army_win(self, simulation):
+    def test_army_win(self, simulation_unequal):
+        lost_army = simulation_unequal.armies[-1]
+        [squad.damaged(MAX_DAMAGE) for squad in lost_army.squads]
+        assert isinstance(simulation_unequal.get_winner_army(), str)
+
+    def test_army_win_simulating(self, simulation):
         while not simulation.is_only_one_army_alive:
-            logging.info([army.is_active for army in simulation.armies])
-            simulation.run(WeakestStrategy)
-        assert isinstance(simulation.get_winner_army(), Army)
+            simulation.run(RandomStrategy())
+        assert isinstance(simulation.get_winner_army(), str)
