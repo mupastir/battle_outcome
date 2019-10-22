@@ -14,23 +14,27 @@ class Strategy(ABC):
 
 
 class RandomStrategy(Strategy):
-    def get_enemy_squad(self, defending: Army) -> Squad:
-        return random.choice(defending.squads)
+    @classmethod
+    def get_enemy_squad(cls, defending: Army) -> Squad:
+        return random.choice(
+            [squad for squad in defending.squads if squad.is_active]
+        )
 
 
 class WeakestStrategy(Strategy):
-    def get_enemy_squad(self, defending: Army) -> Squad:
-        return min(defending.squads)
+    @classmethod
+    def get_enemy_squad(cls, defending: Army) -> Squad:
+        return min(
+            [squad for squad in defending.squads if squad.is_active]
+        )
 
 
 class StrongestStrategy(Strategy):
-    def get_enemy_squad(self, defending: Army) -> Squad:
-        return max(defending.squads)
-
-
-ATTACK_STRATEGIES = {1: RandomStrategy,
-                     2: WeakestStrategy,
-                     3: StrongestStrategy}
+    @classmethod
+    def get_enemy_squad(cls, defending: Army) -> Squad:
+        return max(
+            [squad for squad in defending.squads if squad.is_active]
+        )
 
 
 class Simulation:
@@ -40,27 +44,47 @@ class Simulation:
                  armies_squads: Dict[str, List[int]]):
         self.armies = [ArmyFactory(army_name, units_numbers).create()
                        for army_name, units_numbers in armies_squads.items()]
-        self.my_army, self.enemy_army = self.armies[0], self.armies[1]
+        random.shuffle(self.armies)
+        self.attacking_army_ind = 0
 
-    def run(self, strategy: Strategy) -> str:
-        while not self._is_only_one_army_alive():
-            for squad_n in range(len(self.my_army.squads)):
-                enemy_squad = strategy.get_enemy_squad(self.enemy_army)
-                self.attack(self.my_army.squads[squad_n], enemy_squad)
-            self.my_army, self.enemy_army = self.enemy_army, self.my_army
-        return [army.name for army in self.armies if army.is_active][-1]
+    def run(self, strategy: Strategy) -> float:
+        attacking_army, enemy_armies = self._get_armies()
+        total_damage = 0
+        for enemy_army in enemy_armies:
+            for squad_n in range(len(attacking_army.squads)):
+                enemy_squad = strategy.get_enemy_squad(enemy_army)
+                total_damage += self._attack(
+                    attacking_army.squads[squad_n], enemy_squad)
+        self._change_attacking_army()
+        return total_damage
+
+    def _change_attacking_army(self):
+        if self.attacking_army_ind+1 < len(self.armies):
+            self.attacking_army_ind += 1
+        else:
+            self.attacking_army_ind = 0
+
+    def _get_armies(self) -> (Army, List[Army]):
+        armies = self.armies
+        return armies.pop(self.attacking_army_ind), armies
 
     @staticmethod
-    def is_attacking_win(attacking: Squad, defending: Squad):
+    def _is_attacking_win(attacking: Squad, defending: Squad) -> bool:
         return attacking.attack_probability \
                > defending.attack_probability
 
-    def attack(self, squad, defending_squad):
-        if self.is_attacking_win(squad, defending_squad):
-            damage = squad.damage
-            defending_squad.damaged(damage)
+    def _attack(self, attacking, defending) -> float:
+        if self._is_attacking_win(attacking, defending):
+            damage = attacking.damage
+            defending.damaged(damage)
             return damage
-        return 0
+        return 0.0
 
-    def _is_only_one_army_alive(self) -> bool:
+    def get_winner_army(self) -> [Army, None]:
+        if self.is_only_one_army_alive:
+            return [army for army in self.armies if army.is_active][-1]
+        return None
+
+    @property
+    def is_only_one_army_alive(self) -> bool:
         return sum([army.is_active for army in self.armies]) == 1
