@@ -15,6 +15,10 @@ class MinSquadsException(ValueError):
     pass
 
 
+class MinArmiesException(ValueError):
+    pass
+
+
 class UnitsNumberException(ValueError):
     pass
 
