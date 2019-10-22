@@ -75,7 +75,8 @@ class Squad(BaseSquad):
     def damaged(self, damage_received):
         damage_per_unit = damage_received / len(self.units)
         for unit in self.units:
-            unit.damaged(damage_per_unit)
+            if unit.is_alive():
+                unit.damaged(damage_per_unit)
 
     @property
     def is_active(self) -> bool:
