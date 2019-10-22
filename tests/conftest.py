@@ -12,6 +12,10 @@ OPERATORS_NOT_ENOUGH = 1
 OPERATORS_TOO_MANY = 5
 UNITS_NUMBER = 7
 ARMIES_SQUADS = {'test1': [10, 10], 'test2': [5, 5]}
+ARMIES_SQUADS_UNEQUAL = {
+    'test1': [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+    'test2': [5, 5]
+}
 
 
 @pytest.fixture
@@ -43,6 +47,11 @@ def armies():
     for army_name, squads_numbers in ARMIES_SQUADS.items():
         armies[army_name] = ArmyFactory(army_name, squads_numbers).create()
     return armies_dict
+
+
+@pytest.fixture
+def simulation_unequal():
+    return Simulation(ARMIES_SQUADS_UNEQUAL)
 
 
 @pytest.fixture
