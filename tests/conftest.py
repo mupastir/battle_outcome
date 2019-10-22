@@ -1,6 +1,8 @@
 import pytest
+from factories.army_factory import ArmyFactory
 from models.squads import Squad
 from models.units import Soldier, Vehicle
+from simulation import Simulation
 
 RECHARGE_MIN = 100
 RECHARGE_VEHICLE = 1000
@@ -9,7 +11,7 @@ OPERATORS_NUMBER = 3
 OPERATORS_NOT_ENOUGH = 1
 OPERATORS_TOO_MANY = 5
 UNITS_NUMBER = 7
-ARMIES_NUMBER = 2
+ARMIES_SQUADS = {'test1': [10, 10], 'test2': [5, 5]}
 
 
 @pytest.fixture
@@ -38,9 +40,14 @@ def squad_enemy():
 @pytest.fixture
 def armies():
     armies_dict = {}
-    for army in range(ARMIES_NUMBER):
-        pass
+    for army_name, squads_numbers in ARMIES_SQUADS.items():
+        armies[army_name] = ArmyFactory(army_name, squads_numbers).create()
     return armies_dict
+
+
+@pytest.fixture
+def simulation():
+    return Simulation(ARMIES_SQUADS)
 
 
 def _create_vehicle():
