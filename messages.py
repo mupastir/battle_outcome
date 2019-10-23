@@ -14,3 +14,5 @@ winner_msg = 'The army "{}" won battle!'
 exception_msg = 'Number of ARMIES and SQUADS should be not less than 2!\n' \
                 'Number of UNITS PER SQUAD should be from 5 to 10!\n'
 attacking_msg = '"{}" is attacking now! \n'
+wrong_strategy = '\nYou chose not existing strategy, ' \
+                 'please enter existing strategy \n'

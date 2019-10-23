@@ -2,10 +2,13 @@ import logging
 import sys
 from typing import Dict, List
 
+from constants import ATTACK_STRATEGIES
 from messages import (armies_number_msg, attacking_msg, damaged_not_success,
                       damaged_success, exception_msg, name_army_entry_msg,
                       number_of_squads_msg, number_of_units_msg, repeat_input,
-                      strategy_choose_msg, uncorrected_number, winner_msg)
+                      strategy_choose_msg, uncorrected_number, winner_msg,
+                      wrong_strategy)
+from utils import StrategyValue
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,11 +32,17 @@ class ConsoleUserInterface:
             return int(number)
         except (ValueError, TypeError):
             logger.info(uncorrected_number)
-            self._input_number(repeat_input)
+            return self._input_number(repeat_input)
 
     def _input_squads(self, number_of_squads: int) -> List[int]:
-        return [self._input_number(number_of_units_msg.format(squad+1))
-                for squad in range(number_of_squads)]
+        squad_list = []
+        for squad in range(number_of_squads):
+            squad_list.append(
+                self._input_number(
+                    number_of_units_msg.format(squad + 1)
+                )
+            )
+        return squad_list
 
     def _input_army(self) -> Dict[str, List[int]]:
         name_army = input(name_army_entry_msg)
@@ -49,7 +58,17 @@ class ConsoleUserInterface:
         return armies_dict
 
     def get_strategy(self) -> int:
+        try:
+            strategy = self._input_strategy()
+            return strategy
+        except StrategyValue:
+            logging.info(wrong_strategy)
+            return self.get_strategy()
+
+    def _input_strategy(self) -> int:
         strategy = self._input_number(strategy_choose_msg)
+        if strategy > len(ATTACK_STRATEGIES):
+            raise StrategyValue
         return strategy
 
     @staticmethod
