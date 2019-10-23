@@ -18,10 +18,10 @@ class Army:
 
     @squads.setter
     def squads(self, value: List[Squad]):
-        self.validate_squads(value)
+        self._validate_squads(value)
         self._squads = value
 
-    def validate_squads(self, squads: List[Squad]):
+    def _validate_squads(self, squads: List[Squad]):
         if len(squads) < self.MIN_SQUADS_PER_ARMY:
             raise MinSquadsException
 
