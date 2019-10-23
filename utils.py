@@ -23,5 +23,9 @@ class UnitsNumberException(ValueError):
     pass
 
 
+class StrategyValue(ValueError):
+    pass
+
+
 def geometric_mean(args):
     return reduce(mul, args) ** (1.0 / len(args))
